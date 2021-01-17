@@ -80,10 +80,15 @@ func (s *Service) Card2Card(from, to string, amount int) (int, error) {
 	toCard, err := s.CardSvc.Card(to)
 	if err != nil {
 		toCard.Balance += amount
-		return total, nil
+		return total, err
 
 	}
-	fromCard, err := s.CardSvc.Card(from) // Поиск карты отправителя
+
+	// Поиск карты отправителя
+	fromCard, err := s.CardSvc.Card(from)
+	if err != nil {
+		return amount, ErrInvalidCardNumber
+	}
 
 	// Поиск карты получателя
 	if fromCard == nil && toCard == nil {

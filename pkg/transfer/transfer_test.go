@@ -1,7 +1,7 @@
 package transfer
 
 import (
-	"github.com/ArtDark/bgo_card2card/pkg/card"
+	"github.com/ArtDark/bgo_errors/pkg/card"
 	"testing"
 )
 
@@ -278,8 +278,8 @@ func TestService_Card2Card(t *testing.T) {
 				to:     "5106 2963 6456 3454",
 				amount: 1000_00,
 			},
-			wantTotal: 1005_00,
-			wantOk:    nil,
+			wantTotal: 1000_00,
+			wantOk:    ErrInvalidCardNumber,
 		},
 		//{
 		//	name: "Неправильная карта банка -> Карта чужого банка",
