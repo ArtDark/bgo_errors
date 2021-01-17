@@ -1,3 +1,3 @@
-module github.com/ArtDark/bgo_card2card
+module github.com/ArtDark/bgo_errors
 
 go 1.14
