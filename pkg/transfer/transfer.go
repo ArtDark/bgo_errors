@@ -70,24 +70,26 @@ func IsValid(n string) bool {
 // Функция перевода с карты на карту
 func (s *Service) Card2Card(from, to string, amount int) (int, error) {
 
-	if IsValid(from) != true && IsValid(to) != true {
+	// ПРоверка на правильность номеров карт
+	if !IsValid(from) || !IsValid(to) {
 		return amount, ErrInvalidCardNumber
 	}
 
 	commission := float64(amount) * s.Commission / 100.0 //Расчет комиссии
 	total := amount + int(commission)                    // Расчет суммы перевода с комиссией
 
-	toCard, err := s.CardSvc.Card(to)
+	toCard, err := s.CardSvc.Card(to) // Поиск карты получателя в своем банке
+
 	if err != nil {
-		toCard.Balance += amount
-		return total, err
+		toCard.Balance += amount // Если карта не найдена
+		return total, nil
 
 	}
 
 	// Поиск карты отправителя
 	fromCard, err := s.CardSvc.Card(from)
 	if err != nil {
-		return amount, ErrInvalidCardNumber
+		return amount, nil
 	}
 
 	// Поиск карты получателя
@@ -104,8 +106,8 @@ func (s *Service) Card2Card(from, to string, amount int) (int, error) {
 		return amount, ErrNotEnoughMoney
 	}
 
-	fromCard.Balance -= total
-	toCard.Balance += amount
+	fromCard.Balance -= total // Если у нас есть карта from и на ней достаточно средств, то списываем с неё деньги в размере amount + комиссия
+	toCard.Balance += amount  // Если у нас есть карта to, то зачисляем на неё деньги в размере amount
 
 	return total, nil
 
